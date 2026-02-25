@@ -1,94 +1,86 @@
-const tableBody = document.querySelector("#newsTable tbody");
-
-function formatDate(d){
-  return d.toISOString().split('T')[0];
-}
-
-function getDateByOption(opt){
-  let d = new Date();
-  if(opt=="kemarin") d.setDate(d.getDate()-1);
-  if(opt=="2hari") d.setDate(d.getDate()-2);
-  if(opt=="minggu") d.setDate(d.getDate()-7);
-  return formatDate(d);
-}
-
-function saveData(){
-  localStorage.setItem("koranData", tableBody.innerHTML);
-}
-
-function loadData(){
-  const data = localStorage.getItem("koranData");
-  if(data) tableBody.innerHTML = data;
-}
-
-function addRow(){
-
-  const rowCount = tableBody.rows.length + 1;
+function addRow() {
+  const tableBody = document.querySelector("#newsTable tbody");
+  const rowNumber = tableBody.rows.length + 1;
 
   const row = `
-  <tr>
-    <td>${rowCount}</td>
+    <tr>
+      <td>${rowNumber}</td>
 
-    <td>
-      <select onchange="this.nextElementSibling.value=getDateByOption(this.value); saveData();">
-        <option value="">Pilih</option>
-        <option value="today">Hari ini</option>
-        <option value="kemarin">Kemarin</option>
-        <option value="2hari">2 hari lalu</option>
-        <option value="minggu">Seminggu lalu</option>
-      </select>
-      <br>
-      <input type="date" onchange="saveData()">
-    </td>
+      <td>
+        <input type="date">
+      </td>
 
-    <td>
-      <input type="text" placeholder="😊✨" style="width:60px" onchange="saveData()">
-    </td>
+      <td>✨</td>
 
-    <td>
-      <input type="date" onchange="saveData()">
-    </td>
+      <td>
+        <input type="date">
+      </td>
 
-    <td>
-      <button class="qty" onclick="this.parentNode.dataset.val=4; saveData()">4</button>
-    </td>
+      <td>
+        <input type="number" min="0" style="width:60px">
+      </td>
 
-    <td>
-      <input type="checkbox" onchange="saveData()">
-    </td>
-  </tr>
+      <td>
+        <input type="checkbox">
+      </td>
+    </tr>
   `;
 
   tableBody.insertAdjacentHTML("beforeend", row);
-  saveData();
 }
 
-loadData();
 
-const saveBtn = document.getElementById("saveBtn");
+// 💾 SIMPAN + TAMPILKAN
+function saveData() {
+  const rows = document.querySelectorAll("#newsTable tbody tr");
 
-saveBtn.addEventListener("click", () => {
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
+  const data = [];
 
-  const data = {
-    title: title,
-    content: content
-  };
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll("input");
 
-  localStorage.setItem("newspaperData", JSON.stringify(data));
+    data.push({
+      masuk: inputs[0].value,
+      koran: inputs[1].value,
+      jumlah: inputs[2].value,
+      ceklis: inputs[3].checked
+    });
+  });
 
-  alert("Data saved!");
-});
+  localStorage.setItem("newsData", JSON.stringify(data));
+  showSavedData();
+}
 
-window.addEventListener("load", () => {
-  const saved = localStorage.getItem("newspaperData");
 
-  if (saved) {
-    const data = JSON.parse(saved);
+// 📄 TAMPILKAN DATA DI BAWAH
+function showSavedData() {
+  const container = document.getElementById("savedData");
+  const saved = JSON.parse(localStorage.getItem("newsData")) || [];
 
-    document.getElementById("title").value = data.title;
-    document.getElementById("content").value = data.content;
+  if (saved.length === 0) {
+    container.innerHTML = "Belum ada data tersimpan.";
+    return;
   }
-});
 
+  let html = "<table border='1' cellpadding='6'><tr><th>No</th><th>Tgl Masuk</th><th>Tgl Koran</th><th>Jumlah</th><th>Ceklis</th></tr>";
+
+  saved.forEach((d, i) => {
+    html += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${d.masuk || "-"}</td>
+        <td>${d.koran || "-"}</td>
+        <td>${d.jumlah || 0}</td>
+        <td>${d.ceklis ? "✔" : "-"}</td>
+      </tr>
+    `;
+  });
+
+  html += "</table>";
+
+  container.innerHTML = html;
+}
+
+
+// 🔄 LOAD SAAT HALAMAN DIBUKA
+window.onload = showSavedData;
