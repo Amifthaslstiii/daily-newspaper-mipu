@@ -64,3 +64,31 @@ function addRow(){
 }
 
 loadData();
+
+const saveBtn = document.getElementById("saveBtn");
+
+saveBtn.addEventListener("click", () => {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+
+  const data = {
+    title: title,
+    content: content
+  };
+
+  localStorage.setItem("newspaperData", JSON.stringify(data));
+
+  alert("Data saved!");
+});
+
+window.addEventListener("load", () => {
+  const saved = localStorage.getItem("newspaperData");
+
+  if (saved) {
+    const data = JSON.parse(saved);
+
+    document.getElementById("title").value = data.title;
+    document.getElementById("content").value = data.content;
+  }
+});
+
