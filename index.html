@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Daily Newspaper</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>📰 Daily Newspaper</h1>
+
+  <table id="newsTable">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Tanggal Masuk</th>
+        <th>✨</th>
+        <th>Tanggal Koran</th>
+        <th>Jumlah</th>
+        <th>Ceklis</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button onclick="addRow()">+ Tambah Baris</button>
+  <button onclick="saveData()">💾 Save</button>
+  <button onclick="window.location.href='rekap.html'">
+    📊 Lihat Rekap
+  </button>
+
+  <h2>Data Tersimpan</h2>
+  <div id="savedData"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
