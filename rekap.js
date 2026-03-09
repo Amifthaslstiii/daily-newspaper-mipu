@@ -1,31 +1,52 @@
 const data = JSON.parse(localStorage.getItem("newsData")) || [];
+const container = document.querySelector("#rekapTable tbody");
 
-const tbody = document.querySelector("#rekapTable tbody");
+container.innerHTML = "";
 
 if(data.length === 0){
-  tbody.innerHTML = "<tr><td colspan='5'>Belum ada data</td></tr>";
+container.innerHTML = "<tr><td colspan='5'>Belum ada data</td></tr>";
+return;
 }
 
-data.forEach((d,i)=>{
+// kelompokkan data berdasarkan tanggal masuk
+const grouped = {};
 
-  let ceklis;
+data.forEach(item => {
 
-  if(d.jumlah > 0){
-    ceklis = "✔";
-  }else{
-    ceklis = "-";
-  }
+let tanggal = item.masuk || "Tanpa Tanggal";
 
-  const row = `
-  <tr>
-    <td>${i+1}</td>
-    <td>${d.masuk || "-"}</td>
-    <td>${d.koran || "-"}</td>
-    <td>${d.jumlah || 0}</td>
-    <td>${ceklis}</td>
-  </tr>
-  `;
+if(!grouped[tanggal]){
+grouped[tanggal] = [];
+}
 
-  tbody.insertAdjacentHTML("beforeend",row);
+grouped[tanggal].push(item);
+
+});
+
+// tampilkan per kelompok tanggal
+Object.keys(grouped).forEach(tgl => {
+
+container.insertAdjacentHTML("beforeend",
+`
+<tr style="background:#eee;font-weight:bold">
+<td colspan="5">📅 ${tgl}</td>
+</tr>
+`);
+
+grouped[tgl].forEach((d,i)=>{
+
+let ceklis = d.jumlah > 0 ? "✔" : "-";
+
+container.insertAdjacentHTML("beforeend",
+`
+<tr>
+<td>${i+1}</td>
+<td>${d.masuk || "-"}</td>
+<td>${d.koran || "-"}</td>
+<td>${d.jumlah || 0}</td>
+<td>${ceklis}</td>
+</tr>
+`);
+});
 
 });
